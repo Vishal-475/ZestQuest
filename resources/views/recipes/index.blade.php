@@ -1,52 +1,69 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h1 class="mb-4 text-center">Recipe List</h1>
+<div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-8">Recipe List</h1>
 
         <!-- Add Recipe Button -->
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{{ route('recipes.create') }}" class="btn btn-success">Add New Recipe</a>
+        <div class="flex justify-end mb-6">
+            <a href="{{ route('recipes.create') }}"
+               class="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                + Add New Recipe
+            </a>
         </div>
 
-        @foreach ($recipes as $recipe)
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $recipe->name }}</h5>
-                    
+        @forelse ($recipes as $recipe)
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6 overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">{{ $recipe->name }}</h2>
+
                     @if ($recipe->image)
-                        <img src="{{ asset('storage/' . $recipe->image) }}" alt="{{ $recipe->name }}" class="img-fluid mb-3" style="max-height: 200px;">
+                        <img src="{{ asset('storage/' . $recipe->image) }}" alt="{{ $recipe->name }}"
+                             class="w-full h-48 object-cover rounded mt-4 mb-4">
                     @endif
 
-                    <p class="card-text"><strong>Description:</strong> {{ $recipe->description }}</p>
-                    
-                    <p class="card-text"><strong>Category:</strong> {{ $recipe->category->name ?? 'Uncategorized' }}</p>
-                    
-                    <p class="card-text">
-                        <strong>Tags:</strong> 
+                    <p class="text-gray-700 dark:text-gray-300"><strong>Description:</strong> {{ $recipe->description }}</p>
+
+                    <p class="text-gray-700 dark:text-gray-300 mt-2">
+                        <strong>Category:</strong> {{ $recipe->category->name ?? 'Uncategorized' }}
+                    </p>
+
+                    <p class="text-gray-700 dark:text-gray-300 mt-2">
+                        <strong>Tags:</strong>
                         @if ($recipe->tags->count())
                             {{ implode(', ', $recipe->tags->pluck('name')->toArray()) }}
                         @else
-                            <span class="text-muted">No tags</span>
+                            <span class="text-gray-400">No tags</span>
                         @endif
                     </p>
 
-                    <div class="d-flex justify-content-between">
-                        <!-- View Details Button -->
-                        <a href="{{ route('recipes.show', $recipe) }}" class="btn btn-info">View Details</a>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <a href="{{ route('recipes.show', $recipe) }}"
+                           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                            View Details
+                        </a>
 
-                        <!-- Edit Button -->
-                        <a href="{{ route('recipes.edit', $recipe) }}" class="btn btn-primary">Edit</a>
+                        <a href="{{ route('recipes.edit', $recipe) }}"
+                           class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+                            Edit
+                        </a>
 
-                        <!-- Delete Button -->
-                        <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                        <form action="{{ route('recipes.destroy', $recipe) }}" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this recipe?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+                                Delete
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <p class="text-center text-gray-600 dark:text-gray-300">No recipes found.</p>
+        @endforelse
     </div>
+</div>
 @endsection
